@@ -2,9 +2,9 @@ const aCharCode = "a".charCodeAt(0);
 const capitalACharCode = "A".charCodeAt(0);
 
 function findCommonLetter(left: string, right: string) {
-    for (let i = 0; i < left.length; i++) {
-        if(right.includes(left[i])) {
-            return left[i];
+    for (const char of left) {
+        if(right.includes(char)) {
+            return char;
         }
     }
     return "a";
@@ -12,9 +12,9 @@ function findCommonLetter(left: string, right: string) {
 
 function findCommonLetters(left: string, right: string):string {
     let result = "";
-    for (let i = 0; i < left.length; i++) {
-        if(right.includes(left[i])) {
-            result+=left[i];
+    for (const char of left) {
+        if(right.includes(char)) {
+            result+=char;
         }
     }
     return result;

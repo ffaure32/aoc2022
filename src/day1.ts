@@ -14,8 +14,7 @@ export function buildInput(result: Array<string>) {
     const elves: Array<Elf> = new Array<Elf>();
     let calories: Array<number> = new Array<number>();
     const ELVES_SEPARATOR = '';
-    for (const line in result) {
-        let lineContent: string = result[line];
+    for (const lineContent of result) {
         if (lineContent === ELVES_SEPARATOR) {
             calories = new Array<number>();
             elves.push(new Elf(calories));

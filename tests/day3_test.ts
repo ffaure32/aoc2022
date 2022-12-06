@@ -85,5 +85,5 @@ Deno.test("test day 3 part 2", () => {
 
     const max = computePartTwo(result);
 
-    assertEquals(1809, max);
+    assertEquals(2668, max);
 });

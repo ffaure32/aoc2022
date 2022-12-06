@@ -47,8 +47,8 @@ class Crates {
 
     completed() {
         let result = "";
-        for (let i = 0; i < this.stacks.length; i++) {
-            result += this.stacks[i].peek();
+        for (const stack of this.stacks) {
+            result += stack.peek();
         }
         return result;
     }
