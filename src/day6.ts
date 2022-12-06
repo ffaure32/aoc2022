@@ -1,12 +1,7 @@
 export function findUniqueCharsSequence(line: String, charsCount: number = 4): number {
-    for (let i = 0; i < line.length; i++) {
-        let newChars = line.slice(i, i+charsCount);
-        let uniqueChars = new Set(newChars.split(''));
-        if(uniqueChars.size == charsCount) {
-            return i+charsCount;
-        }
-    }
-    return -1;
+    return ([...Array(line.length).keys()].
+        find((i) => new Set(line.slice(i, i + charsCount).split('')).size == charsCount)
+        || -1)+charsCount;
 }
 
 export function computePartOne(lines: Array<string>): number {
