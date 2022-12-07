@@ -17,8 +17,8 @@ class Directory extends Element {
     computedSize: number;
     constructor(name: string, parent: Directory);
     constructor(name: string);
-    public constructor(...myarray: any[]) {
-        super(myarray[0], myarray[1]);
+    public constructor(...myArray: any[]) {
+        super(myArray[0], myArray[1]);
         this.children = new Map<string, Element>();
         this.computedSize = -1;
     }
@@ -50,6 +50,7 @@ class File extends Element {
 export class FileSystem {
     private readonly TOTAL_SPACE = 70000000;
     private readonly MIN_SPACE = 30000000;
+    private readonly SEPARATOR = '/';
 
     rootDirectory : Directory;
     currentDirectory : Directory;
@@ -63,42 +64,47 @@ export class FileSystem {
 
     parseLine(line: string) {
         if(line.startsWith("$")) {
-            if(line.substring(2, 4) === "cd") {
-                // cd
-                const target = line.slice(5);
-                switch (target) {
-                    case "..": // back
-                        this.currentDirectory = this.currentDirectory.parent;
-                        break;
-                    case "/": // root
-                        this.currentDirectory = this.rootDirectory;
-                        break;
-                    default: // new directory
-                        let key = this.fullName(target);
-                        this.currentDirectory = this.directories.get(key) || this.rootDirectory;
-                        break;
-                }
-            } else {
-                // ls
-            }
+            this.parseCommand(line);
         } else if(line.startsWith("dir")) {
-            // dir
-            const dirName = this.fullName(line.slice(4));
-            if(!this.directories.has(dirName)) {
-                const newDir = new Directory(dirName, this.currentDirectory);
-                this.directories.set(dirName, newDir);
-                this.currentDirectory.children.set(dirName, newDir);
-            }
+            this.parseDir(line);
         } else {
-            // file
-            const parts = line.split(" ");
-            let fileName = this.fullName(parts[1]);
-            const newFile = new File(fileName, this.currentDirectory, Number(parts[0]));
-            this.currentDirectory.children.set(fileName, newFile);
+            this.parseFile(line);
         }
     }
 
-    private readonly SEPARATOR = '/';
+    private parseFile(line: string) {
+        const parts = line.split(" ");
+        let fileName = this.fullName(parts[1]);
+        const newFile = new File(fileName, this.currentDirectory, Number(parts[0]));
+        this.currentDirectory.children.set(fileName, newFile);
+    }
+
+    private parseDir(line: string) {
+        const dirName = this.fullName(line.slice(4));
+        if (!this.directories.has(dirName)) {
+            const newDir = new Directory(dirName, this.currentDirectory);
+            this.directories.set(dirName, newDir);
+            this.currentDirectory.children.set(dirName, newDir);
+        }
+    }
+
+    private parseCommand(line: string) {
+        if (line.substring(2, 4) === "cd") {
+            const target = line.slice(5);
+            this.currentDirectory = this.changeDirectory(target);
+        }
+    }
+
+    private changeDirectory(target: string) {
+        switch (target) {
+            case "..": // back
+                return this.currentDirectory.parent;
+            case "/": // root
+                return this.rootDirectory;
+            default: // new directory
+                return this.directories.get(this.fullName(target)) || this.rootDirectory;
+        }
+    }
 
     fullName(name: string) {
         const suffix = this.SEPARATOR+name;
@@ -128,7 +134,9 @@ export class FileSystem {
 
 export function buildFileSystem(lines: Array<string>): FileSystem {
     let fileSystem = new FileSystem();
-    lines.slice(1).filter(s => s !== '')
+    lines
+        .slice(1)
+        .filter(s => s !== '')
         .forEach(l => fileSystem.parseLine(l));
     return fileSystem;
 }
