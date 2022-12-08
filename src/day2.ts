@@ -22,8 +22,7 @@ const scoresPart2 = new Map<string, number>([
 ]);
 
 function computeScore(result: Array<string>, scoresToMap: Map<string, number>) {
-    return result.filter((s) => s !== '')
-        .map((s) => scoresToMap.get(s) || 0)
+    return result.map((s) => scoresToMap.get(s) || 0)
         .reduce((acc, current) => {return acc + current;}, 0);
 }
 

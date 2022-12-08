@@ -136,7 +136,6 @@ export function buildFileSystem(lines: Array<string>): FileSystem {
     let fileSystem = new FileSystem();
     lines
         .slice(1)
-        .filter(s => s !== '')
         .forEach(l => fileSystem.parseLine(l));
     return fileSystem;
 }

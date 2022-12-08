@@ -48,7 +48,7 @@ function initAssignment(input: string): Assignment {
 }
 
 function getElvesPairs(result: Array<string>) {
-    return result.filter((s) => s !== '')
+    return result
         .map((line) => initElvesPair(line));
 }
 

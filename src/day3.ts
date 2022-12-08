@@ -43,7 +43,7 @@ export function calculateLineScore(line: string): number {
 }
 
 export function computePartOne(result : Array<string>) {
-    return result.filter((s) => s !== '')
+    return result
         .map((line) => calculateLineScore(line))
         .reduce((acc, current) => {return acc + current;}, 0);
 }

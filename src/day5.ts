@@ -61,7 +61,7 @@ export function parseLine(line: String): Move {
 
 export function computePartOne(lines: Array<string>): string {
     const crates = new Crates();
-    lines.filter((s) => s !== '')
+    lines
         .map(parseLine)
         .forEach((move) => crates.moveCrate(move));
     return crates.completed();
@@ -69,7 +69,7 @@ export function computePartOne(lines: Array<string>): string {
 
 export function computePartTwo(lines: Array<string>): string {
     const crates = new Crates();
-    lines.filter((s) => s !== '')
+    lines
         .map(parseLine)
         .forEach((move) => crates.moveCrateReverse(move));
     return crates.completed();
