@@ -10,5 +10,5 @@ Array.prototype.sum = function () {
 };
 Array.prototype.max = function () {
     let _self = this as Array<number>;
-    return _self.sort()[_self.length-1];
+    return Math.max(..._self);
 };

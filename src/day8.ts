@@ -9,72 +9,67 @@ class TreeMap {
         this.treeCols = treeCols;
     }
 
-    maxSight() {
-        let maxSight = 0;
-        for (let i = 1; i < this.treeRows.length-1; i++) {
-            for (let j = 1; j <this.treeCols.length-1; j++) {
-                let scenicScore = this.scenicScore(i, j);
-                if(scenicScore>maxSight) {
-                    maxSight = scenicScore;
-                }
-            }
-        }
-        return maxSight;
-    }
-
-    countVisible() {
+    public countVisible() {
         let visibleCount = 0;
-        for (let i = 0; i < this.treeRows.length; i++) {
-            for (let j = 0; j <this.treeCols.length; j++) {
-                if(this.isVisible(i, j)) {
+        for (let row = 0; row < this.treeRows.length; row++) {
+            for (let col = 0; col <this.treeCols.length; col++) {
+                if(this.isVisible(row, col)) {
                     visibleCount++;
                 }
             }
         }
         return visibleCount;
     }
-    isVisible(row: number, col: number) {
-        return this.isLineVisible(this.treeRows[row], col) || this.isLineVisible(this.treeCols[col], row);
+    private isVisible(row: number, col: number) {
+        return this.isTreeVisibleInLine(this.treeRows[row], col) || this.isTreeVisibleInLine(this.treeCols[col], row);
     }
 
-    isLineVisible(line: number[], index: number) {
-        if(index == 0 || index == line.length-1) {
+    private isTreeVisibleInLine(treeHeightsLine: number[], treeIndex: number) {
+        if(treeIndex == 0 || treeIndex == treeHeightsLine.length-1) {
             return true;
         }
-        let number = line[index];
-        const start = line.slice(0, index);
-        const end = line.slice(index+1);
+        let treeHeight = treeHeightsLine[treeIndex];
+        const leftTrees = treeHeightsLine.slice(0, treeIndex);
+        const rightTrees = treeHeightsLine.slice(treeIndex+1);
 
-        return number>this.max(start) || number>this.max(end)
+        return treeHeight > leftTrees.max() || treeHeight > rightTrees.max()
     }
 
-    scenicScore(row: number, col: number) {
-        return this.lineScenicScore(this.treeRows[row], col) * this.lineScenicScore(this.treeCols[col], row);
-    }
-
-    lineScenicScore(line: number[], index: number) : number {
-        let number = line[index];
-        const start = line.slice(0, index).reverse();
-        let leftSight = this.computeSightForSide(start, number);
-        const end = line.slice(index+1);
-        let rightSight = this.computeSightForSide(end, number);
-        return leftSight * rightSight;
-    }
-
-    private computeSightForSide(start: number[], number: number) {
-        let leftSight = 1;
-        for (let i = 0; i < start.length - 1; i++) {
-            if (start[i] >= number) {
-                break;
-            } else {
-                leftSight++;
+    public maxSight() {
+        let maxSight = 0;
+        for (let row = 1; row < this.treeRows.length-1; row++) {
+            for (let col = 1; col <this.treeCols.length-1; col++) {
+                if(this.scenicScore(row, col) >maxSight) {
+                    maxSight = this.scenicScore(row, col);
+                }
             }
         }
-        return leftSight;
+        return maxSight;
     }
 
-    private max(start: number[]) {
-        return Math.max(...start);
+    private scenicScore(row: number, col: number) {
+        let horizontalViewingDistance = this.viewingDistance(this.treeRows[row], col);
+        let verticalViewingDistance = this.viewingDistance(this.treeCols[col], row);
+        return horizontalViewingDistance * verticalViewingDistance;
+    }
+
+    private viewingDistance(treeHeightsLine: number[], treeIndex: number) : number {
+        let treeHeight = treeHeightsLine[treeIndex];
+        const leftTrees = treeHeightsLine.slice(0, treeIndex).reverse();
+        let leftViewingDistance = this.viewingDistanceForSide(leftTrees, treeHeight);
+        const rightTrees = treeHeightsLine.slice(treeIndex+1);
+        let rightViewingDistance = this.viewingDistanceForSide(rightTrees, treeHeight);
+        return leftViewingDistance * rightViewingDistance;
+    }
+
+    private viewingDistanceForSide(sideElements: number[], treeHeight: number) : number {
+        let viewingDistance = 1;
+        let index = 0;
+        while (index < sideElements.length - 1 && sideElements[index] < treeHeight) {
+            viewingDistance++;
+            index++;
+        }
+        return viewingDistance;
     }
 }
 
