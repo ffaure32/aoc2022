@@ -1,16 +1,47 @@
 import "./extensions.ts";
 
+class Knot {
+    x: number;
+    y : number;
+
+    constructor() {
+        this.x = 0;
+        this.y = 0;
+    }
+
+    up = () => this.y++;
+    down = () => this.y--;
+    left = () => this.x--;
+    right = () => this.x++;
+
+    follow(head: Knot) {
+        let horizontalDiff = head.x - this.x;
+        let verticalDiff = head.y - this.y;
+        let horizontalDistance = Math.abs(horizontalDiff);
+        let verticalDistance = Math.abs(verticalDiff);
+        if(horizontalDistance<=1 && verticalDistance <=1) return;
+        let horizontalDirection = horizontalDiff / horizontalDistance;
+        let verticalDirection = verticalDiff / verticalDistance;
+        this.x += horizontalDirection || 0;
+        this.y += verticalDirection || 0;
+    }
+
+    toSTring() {
+        return `${this.x} ${this.y}`;
+    }
+}
+
 class Rope {
     positions : Set<string>;
     knotsCount: number
-    knots: [number, number][];
+    knots: Knot[];
 
     constructor(knots: number) {
         this.positions = new Set<string>();
         this.knotsCount = knots;
-        this.knots = new Array<[number, number]>();
+        this.knots = new Array<Knot>();
         for (let i = 0; i < this.knotsCount; i++) {
-            this.knots.push([0, 0]);
+            this.knots.push(new Knot());
         }
         this.addTailToPositions();
     }
@@ -35,51 +66,33 @@ class Rope {
         let head = this.knots[0];
         switch (direction) {
             case "U":
-                this.knots[0] = [head[0], head[1] + 1];
+                head.up();
                 break;
             case "D":
-                this.knots[0] = [head[0], head[1] - 1];
+                head.down();
                 break;
             case "L":
-                this.knots[0] = [head[0] - 1, head[1]];
+                head.left();
                 break;
             case "R":
-                this.knots[0] = [head[0] + 1, head[1]];
+                head.right();
                 break;
         }
     }
 
     private follow() {
         for (let i = 0; i < this.knotsCount-1; i++) {
-            this.knots[i+1] = this.followKnot(this.knots[i], this.knots[i+1]);
+            this.followKnot(this.knots[i], this.knots[i+1]);
         }
     }
 
-    private followKnot(head: [number, number], tail: [number, number]) {
-        let horizontalDiff = head[0] - tail[0];
-        let verticalDiff = head[1] - tail[1];
-        let horizontalDistance = Math.abs(horizontalDiff);
-        let verticalDistance = Math.abs(verticalDiff);
-        let horizontalDirection = horizontalDiff / horizontalDistance;
-        let verticalDirection = verticalDiff / verticalDistance;
-        if (horizontalDistance >= 2) {
-            tail[0] = tail[0] + horizontalDirection;
-            if (verticalDistance >= 1) {
-                tail[1] = tail[1] + verticalDirection;
-            }
-        } else if (verticalDistance >= 2) {
-            tail[1] = tail[1] + verticalDirection;
-            if (horizontalDistance >= 1) {
-                tail[0] = tail[0] + horizontalDirection;
-            }
-        }
-        return tail;
+    private followKnot(head: Knot, tail: Knot) {
+        tail.follow(head);
     }
 
     private addTailToPositions() {
         const tail = this.knots[this.knotsCount-1];
-        const position = tail[0]+','+tail[1];
-        this.positions.add(position);
+        this.positions.add(tail.toSTring());
     }
 
 
