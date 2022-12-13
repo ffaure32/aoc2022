@@ -17,12 +17,10 @@ class HeightMap {
             for (let j = 0; j <this.grid[0].length; j++) {
                 line.push(this.unseenSquare);
                 if(this.grid[i][j] === 'S') {
-                    console.log(`START ${i} ${j}`)
                     this.startPosition = [i, j];
                     this.grid[i][j] = 'a';
                 }
                 if(this.grid[i][j] === 'E') {
-                    console.log(`END ${i} ${j}`)
                     this.endPosition = [i, j];
                     this.grid[i][j] = 'z';
                 }
