@@ -18,17 +18,22 @@ export class Waterfall {
         for (let i = 0; i < segments.length-1; i++) {
             const start = coords(segments[i]);
             const end = coords(segments[i+1]);
-            const minx = Math.min(start[0], end[0]);
-            const maxx = Math.max(start[0], end[0]);
-            const miny = Math.min(start[1], end[1]);
-            const maxy = Math.max(start[1], end[1]);
-            for (let y = miny; y <= maxy; y++) {
-                for (let x = minx; x <= maxx; x++) {
-                    this.addChar(x, y, '#');
-                }
-            }
+            const maxy = this.addSegment(start, end);
             this.bottomy = Math.max(maxy, this.bottomy);
         }
+    }
+
+    private addSegment(start: number[], end: number[]) {
+        const minx = Math.min(start[0], end[0]);
+        const maxx = Math.max(start[0], end[0]);
+        const miny = Math.min(start[1], end[1]);
+        const maxy = Math.max(start[1], end[1]);
+        for (let y = miny; y <= maxy; y++) {
+            for (let x = minx; x <= maxx; x++) {
+                this.addChar(x, y, '#');
+            }
+        }
+        return maxy;
     }
 
     addChar(x: number, y: number, value: string) {
@@ -54,8 +59,8 @@ export class Waterfall {
         let x = 500;
         let rest = false;
         let upTouched = false;
-        for (let y = 0; y <= this.bottomy; y++) {
-            const horizontalLine = this.getOrCreateHorizontalLine(y);
+        for (let y = 0; y < this.bottomy; y++) {
+            const horizontalLine = this.getOrCreateHorizontalLine(y+1);
             if(!horizontalLine.has(x)) {
                 // x does not change
             } else if(!horizontalLine.has(x-1)) {
@@ -63,9 +68,9 @@ export class Waterfall {
             } else if(!horizontalLine.has(x+1)) {
                 x = x+1;
             } else {
-                this.addChar(x, y-1, 'o');
+                this.addChar(x, y, 'o');
                 rest = true;
-                upTouched = (y-1 === 0);
+                upTouched = (y === 0);
                 break;
             }
         }
