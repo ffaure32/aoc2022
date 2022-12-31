@@ -151,6 +151,7 @@ class Square extends Rock {
 
 
 export class Tetris {
+    realHighest: number;
     highestRock: number;
     left: number;
     round: number;
@@ -158,9 +159,11 @@ export class Tetris {
     moves:String;
     moveIndex: number;
     rocksCount: number;
-    moduloRocks: Array<Set<number>>;
+    moduloRocks: Array<Set<string>>;
+    patternHeight: Map<string, number>;
     constructor(moves: string, rocksCount = 2022) {
         this.highestRock = 0;
+        this.realHighest = 0;
         this.left = 2;
         this.round = 0;
         this.moves = moves;
@@ -169,24 +172,35 @@ export class Tetris {
         for (let i = 0; i < 7; i++) {
             this.occupiedRocks[i] = new Set<number>();
         }
-        this.moduloRocks = new Array<Set<number>>();
+        this.moduloRocks = new Array<Set<string>>();
         for (let i = 0; i < 5; i++) {
-            this.moduloRocks[i] = new Set<number>();
+            this.moduloRocks[i] = new Set<string>();
         }
         this.rocksCount = rocksCount;
+        this.patternHeight = new Map<string, number>;
     }
 
     rocksFall() {
         for (let i = 0; i < this.rocksCount; i++) {
-            if(this.moduloRocks[i%5].has(this.moveIndex)) {
-                for (let j = 0; j < this.highestRock; j++) {
-                    const fullLine = this.occupiedRocks.every(col => col.has(j));
-                    if(fullLine && j>this.highestRock-3) {
-                        console.log("colonne remplie: "+i+" "+j+" "+this.highestRock);
-                    }
+            if(i>4) {
+                this.occupiedRocks.map(c =>c.has(this.highestRock-1) ? '#' : '.').join();
+                const pattern = this.moveIndex
+                    +this.occupiedRocks.map(c =>c.has(this.highestRock-1) ? '#' : '.').join('')
+                    +this.occupiedRocks.map(c =>c.has(this.highestRock-2) ? '#' : '.').join('')
+                    +this.occupiedRocks.map(c =>c.has(this.highestRock-3) ? '#' : '.').join('');
+                    +this.occupiedRocks.map(c =>c.has(this.highestRock-4) ? '#' : '.').join('');
+                    +this.occupiedRocks.map(c =>c.has(this.highestRock-5) ? '#' : '.').join('');
+                // console.log(pattern);
+                if(this.moduloRocks[i%5].has(pattern)) {
+                    console.log(i+" colonne remplie: "+pattern);
+                    console.log(i+" move index: "+this.moveIndex);
+                    const diff = this.patternHeight.get(pattern) ?? 0;
+                    console.log(this.highestRock - diff);
+                    console.log(this.highestRock);
+                    this.patternHeight.set(pattern, this.highestRock);
+                } else {
+                    this.moduloRocks[i%5].add(pattern);
                 }
-            } else {
-                this.moduloRocks[i%5].add(this.moveIndex);
             }
             this.nextRock();
         }
@@ -199,6 +213,7 @@ export class Tetris {
             blocked = this.fall(rock);
             this.moveIndex+=1;
             if(this.moveIndex===this.moves.length) {
+                console.log("ON A FAIT LE TOUR");
                 this.moveIndex=0;
             }
         }
