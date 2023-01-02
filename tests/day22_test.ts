@@ -303,5 +303,5 @@ Deno.test("part 1 real input", () => {
 
     const result = parseInput(lines);
 
-    assertEquals(6032, result);
+    assertEquals(57305, result);
 });
